@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>表格添加数据</title>
+  <style>
+    table{
+        width:600px;
+        border-collapse:collapse; 
+        border:solid 1px Black;
+        margin:20px auto;
+    }
+    table td,table th{ 
+        width:50px; 
+        height:20px;  
+        border:solid 1px Black; 
+        padding:5px;
+        text-align:center;
+        line-height:20px;
+    }
+    .xg,.del{
+        margin:3px;
+    }
+    .xg:hover,.del:hover{
+        cursor:pointer;
+        color:red;
+    }
+    ul{
+        width:600px;
+        margin:125px auto;
+    }
+    ul li{
+        list-style:none;
+        height:20px;
+        margin-bottom:46px;
+    }
+    ul li span{
+        display:block;
+        width:65px;
+        float:left;
+    }
+    ul li input{
+        float:left;
+        padding-left:5px;
+    }
+    .jj span,.sj span{
+        letter-spacing:5px;
+    }
+    button{
+        width:88px;
+        height:32px;
+    }
+</style>
+</head>
+<body>
+    <form action="" method="post">
+        <table cellspacing="0" class="table-box">
+            <tr class="table-head">
+                <th>商品名</th>
+                <th>进价</th>
+                <th>售价</th>
+                <th>操作</th>
+            </tr>
+        </table>
+        <input type="submit" value="提交">
+    </form>
+    
+
+    <ul>
+        <li class="sp">
+            <span>商品名：</span>
+            <input type="text" class="name-text">
+        </li>
+        <li class="jj">
+            <span>进价：</span>
+            <input type="text" class="jinjia-text">
+        </li>
+        <li class="sj">
+            <span>售价：</span>
+            <input type="text" class="shoujia-text">
+        </li>
+        <li>
+            <button class="add-btn">添加</button>
+        </li>
+    </ul>
+</body>
+<script src="js/jquery.js"></script>
+<script>
+    var dataBase = new Array(),
+        nameDom = $(".name-text"),
+        jinjiaDom = $(".jinjia-text"),
+        shoujiaDom = $(".shoujia-text");
+    
+    // 绘制表格
+    var printTable = function(data){
+        //先把原数据清空
+        $(".table-item").remove();
+
+        data.forEach(function(v,i){
+           var el = '<tr class="table-item" data-num="' + i + '">' +
+           '<td>' + v.name + '</td>' +
+           '<td>' + v.jinjia + '</td>' +
+           '<td>' + v.shoujia + '</td>' +
+           '<td>' +
+           '<span class="xg">修改</span><span class="del">删除</span>' +
+           '</td>' +
+           '<input type="hidden" name="data[' + i + ']" value="' + v.name + '_|_'+ v.jinjia +'_|_'+ v.shoujia + '">'
+           '</tr>';
+           $(".table-box").append(el);
+        }) 
+    };
+
+    "白菜_|_2_|_3"
+
+    $("body")
+        //添加数据
+        .on("click",".add-btn",function(){
+            var name = nameDom.val(),
+                jinjia = jinjiaDom.val(),
+                shoujia = shoujiaDom.val();
+            if(name.length != 0 && jinjia.length != 0 && shoujia.length != 0){
+                if($(this).hasClass("change")){
+                    //修改数据
+                    var num = $(this).attr("data-num");
+                    dataBase[num].name = name;
+                    dataBase[num].jinjia = jinjia;
+                    dataBase[num].shoujia = shoujia;
+                    $(this).removeClass("change");
+                }else{
+                   //增加到数据里
+                    dataBase.push({
+                        "name" : name,
+                        "jinjia" : jinjia,
+                        "shoujia" : shoujia
+                    }); 
+                }                
+                //清空
+                nameDom.val("");
+                jinjiaDom.val("");
+                shoujiaDom.val("");
+                //绘制表格
+                printTable(dataBase);
+                $(".add-btn").html("添加");
+            }else{
+                alert("填完再点，蠢货！");
+            }
+        })
+        //点击删除
+        .on("click",".del",function(){
+            if(confirm("确定要删除该条数据吗？")){
+                var num = $(this).parents(".table-item").attr("data-num");
+                dataBase.splice(num, 1);
+                printTable(dataBase);
+            }            
+        })
+        //点击修改
+        .on("click",".xg",function(){
+            var num = $(this).parents(".table-item").attr("data-num");
+            nameDom.val(dataBase[num].name);
+            jinjiaDom.val(dataBase[num].jinjia);
+            shoujiaDom.val(dataBase[num].shoujia);
+            $(".add-btn").addClass("change").attr("data-num",num).html("修改");
+        })
+</script>
+</html>
